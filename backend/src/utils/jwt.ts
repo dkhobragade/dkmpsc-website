@@ -1,9 +1,10 @@
 import jwt from "jsonwebtoken";
-import { Response } from "express";
+import type { SignOptions } from "jsonwebtoken";
+import type { Response } from "express";
 
 export const generateToken = (userId: string) => {
   return jwt.sign({ id: userId }, process.env.JWT_SECRET || "default_secret", {
-    expiresIn: process.env.JWT_EXPIRES_IN || "7d",
+    expiresIn: (process.env.JWT_EXPIRES_IN || "7d") as NonNullable<SignOptions["expiresIn"]>,
   });
 };
 

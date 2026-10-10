@@ -1,8 +1,8 @@
-import { Request, Response } from "express";
+import type { Request, Response } from "express";
 import bcrypt from "bcryptjs";
-import { User } from "../models/User";
-import { generateToken, setAuthCookie, clearAuthCookie } from "../utils/jwt";
-import { AuthRequest } from "../middleware/auth";
+import { User } from "../models/User.js";
+import { generateToken, setAuthCookie, clearAuthCookie } from "../utils/jwt.js";
+import type { AuthRequest } from "../middleware/auth.js";
 import { z } from "zod";
 
 const signupSchema = z.object({
@@ -32,11 +32,11 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
     const hashedPassword = await bcrypt.hash(password, salt);
 
     const user = await User.create({
-      fullName,
-      email,
-      mobile,
-      password: hashedPassword,
-      role: "user", // hardcoded default
+        fullName,
+        email,
+        ...(mobile !== undefined ? { mobile } : {}),
+        password: hashedPassword,
+        role: "user",
     });
 
     const token = generateToken(user._id.toString());
@@ -56,7 +56,7 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      res.status(400).json({ success: false, message: "Invalid input", errors: error.errors });
+      res.status(400).json({ success: false, message: "Invalid input", errors: error.issues });
     } else {
       console.error(error);
       res.status(500).json({ success: false, message: "Internal server error" });
@@ -98,7 +98,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      res.status(400).json({ success: false, message: "Invalid input" });
+      res.status(400).json({ success: false, message: "Invalid input", errors: error.issues });
     } else {
       console.error(error);
       res.status(500).json({ success: false, message: "Internal server error" });

@@ -3,8 +3,8 @@ import cors from "cors";
 import helmet from "helmet";
 import cookieParser from "cookie-parser";
 import rateLimit from "express-rate-limit";
-import authRoutes from "./routes/auth.routes";
-import dashboardRoutes from "./routes/dashboard.routes";
+import authRoutes from "./routes/auth.routes.js";
+import dashboardRoutes from "./routes/dashboard.routes.js";
 import dotenv from "dotenv";
 
 dotenv.config();
